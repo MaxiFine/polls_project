@@ -1,3 +1,5 @@
+from config import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
@@ -15,7 +17,7 @@ class Question(models.Model):
         CLOSE = 'cls', 'Close'
 
     question = models.CharField(max_length=100)
-    created = models.DateTimeField(default=timezone.now)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,)
     status = models.CharField(max_length=3, 
                               choices=Status.choices,
                               default=Status.CLOSE)
