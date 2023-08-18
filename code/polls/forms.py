@@ -10,10 +10,10 @@ class PollsQueationForm(forms.ModelForm):
 
 
 class SharePollForm(forms.Form):
-    # name = forms.CharField(max_length=50, blank=True)
+    name = forms.CharField(required=False)
     email = forms.EmailField()
     to = forms.EmailField()
-    #comments = forms.CharField(required=False, widget=forms.Textarea)
+    
 
 
 class EditPollForm(forms.ModelForm):

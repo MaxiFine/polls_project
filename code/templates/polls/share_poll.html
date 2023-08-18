@@ -12,11 +12,11 @@
     "{{ poll.question }}" was successfully sent to {{ form.cleaned_data.to }}.
     </p>
   {% else %}
-        <h1>Share "{{ poll.pk }}" by e-mail</h1>
+        <h1>Share "{{ poll.question }}" by e-mail</h1>
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
-        <input type="submit" value="Send e-mail">
+        <input class="btn btn-outline-success" type="submit" value="Share Poll">
         </form>
     {% endif %}
 

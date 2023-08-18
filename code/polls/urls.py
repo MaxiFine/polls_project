@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (HomePageView, AboutPageView,
                     PollsCreateView, PollsListView, 
                     PollDetailView, EditPollView, share_poll,
-                    PollsByUsersView, VoteView, results)
+                    PollsByUsersView, vote, results,)
 
 
 
@@ -19,6 +19,6 @@ urlpatterns = [
     path('polls-detail/<int:pk>/', PollDetailView.as_view(), name='poll_detail'),
     path('edit-poll/<int:pk>/', EditPollView.as_view(), name='edit_poll'),
     # Voting
-    path('vote/<int:pk>/', VoteView.as_view(), name='vote'),
+    path('vote/<int:pk>/', vote, name='vote'),
     path('poll-results/<int:pk>/', results, name='poll_results'),
 ]

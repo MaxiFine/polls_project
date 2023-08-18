@@ -39,7 +39,8 @@
                     {% if user == poll.author %}
                         <a href="{% url 'edit_poll' poll.pk %}">Edit</a> | 
                         <a href="#">Delete</a> | 
-                        <a href="{% url 'share_poll' poll.pk %}">Share Poll</a>
+                        <a href="{% url 'share_poll' poll.pk %}">Share Poll</a> | 
+                        <a href="{% url 'vote' poll.pk %}">Vote</a>
                     {% endif %}
                     </p>
                 </div>

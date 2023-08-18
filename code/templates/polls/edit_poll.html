@@ -8,7 +8,7 @@
         {% csrf_token %}
         {{ form|crispy }}
         <br>
-    <button class="btn btn-success-outline ml-2" type="submit"><a href="{% url 'poll_detail' poll.id %}"></a>Update Poll</button>
+    <button class="btn btn-outline-success ml-2" type="submit"><a href="{% url 'poll_detail' poll.id %}"></a>Update Poll</button>
     </form>
     <br>
 {% endblock content %}

@@ -5,9 +5,12 @@
 {% block content %}
     <div class="card">
         <div class="card-header">
-            <h4 class="font-weight-bold">{{ poll.question }}</h4>
+            <h4 class="font-weight-bold">Available Poll</h4>
         </div>
         <div class="card-body">
+            <br>
+            <h3>{{ poll.question }}</h3>
+            <br>
             <form method="post" action="post">
                 {% csrf_token %}
                 <div class="form-check">
@@ -29,11 +32,13 @@
                     </label>
                 </div>
             </form>
-            <button type="submit" class="btn btn-outline-success mt-3">Vote</button>
+            <br>
+            <br>
+            <a class="btn btn-outline-info" href="{% url 'vote' poll.pk %}">Cast Vote</a>
             {% if user.is_authenticated %}
-            <button type="submit" class="btn btn-outline-secondary mt-3"><a href="{% url 'edit_poll' poll.pk %}"></a>Edit Poll</button>
+            <a class="btn btn-outline-secondary" href="{% url 'edit_poll' poll.pk %}">Edit Poll</a>
             {% endif %}
-            <button type="submit" class="btn btn-outline-secondary mt-3"><a href="{% url 'share_poll' poll.pk %}"></a>Share Poll</button>
+            <a class="btn btn-outline-primary" href="{% url 'share_poll' poll.pk %}">Share Poll</a>
         </div>
 
         <div class="card-footer">

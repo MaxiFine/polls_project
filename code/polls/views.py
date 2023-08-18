@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DetailView, DeleteView, TemplateView, View
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import Polls      # Question, Choice
@@ -51,7 +51,7 @@ class PollsCreateView(CreateView):
         form = self.form_class()
         return render(request, self.template_name, {'form': form,})
     
-    def post(self, request):
+    def poll(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
             form.instance.author = self.request.user
@@ -73,7 +73,7 @@ class PollDetailView(View):
         form = EditPollForm(instance=poll)
         return render(request, self.template_name, {'poll': poll, 'form': form})
 
-    def post(self, request, pk):
+    def poll(self, request, pk):
         poll = get_object_or_404(Polls, pk=pk)
         form = EditPollForm(request.POST, instance=poll)
         if form.is_valid():
@@ -82,34 +82,31 @@ class PollDetailView(View):
         return render(request, self.template_name, {'poll': poll, 'form': form})
 
 def share_poll(request, pk):
-    # Retrieve post by id
+    # Retrieve poll by id
     poll = get_object_or_404(Polls, pk=pk,)
     sent = False
 
     if request.method == 'POST':
         form = SharePollForm(request.POST)
         if form.is_valid():
-            recipient_mail = form.cleaned_data['recipient_mail']
-            mail_body = f"Invitation to participate in a poll: \n\t {poll.question}"
-            
-            poll_url = request.build_absolute_uri(poll.get_absolute_url())
-            subject = f"Polls Invitation."
-            message = f"{mail_body} at {poll_url}\n\n"
-            email = EmailMessage(
-                      subject, 
-                      message, 
-                      request.user.email, 
-                      [recipient_mail])
-            email.attach(poll.pk)
-            email.send()
 
-            messages.success(request, 'Poll Sent')
+            # Form fields passed validation
+            cd = form.cleaned_data
+            # ... send the mail
+            post_url = request.build_absolute_uri(poll.get_absolute_url())
+            subject = f"{cd['name']} recommends you read " f"{poll.question}"
+            message = f"Read {poll.question} at {post_url}\n\n" f"{cd['name']}"
+            send_mail(subject, message, 'sikapa75@gmail.com', [cd['to']])
+            sent = True            
+
+            messages.success(request, 'Your Poll have been Sent')
             return redirect('poll_detail', pk=pk)
     else:
         form = SharePollForm()
     return render(request, 'polls/share_poll.html', 
-                  {'post': poll, 
-                   'form': form,})
+                  {'poll': poll, 
+                   'form': form,
+                   'sent': sent,})
 
 
 class EditPollView(LoginRequiredMixin, UpdateView):
@@ -124,36 +121,11 @@ class EditPollView(LoginRequiredMixin, UpdateView):
         return redirect('poll_detail', pk=edit_poll.pk)
 
 
-# def vote(request, poll_id):
-#     poll = Polls.objects.get(pk=poll_id)
+def vote(request, pk):
+    poll = Polls.objects.get(pk=pk)
     
-#     if request.method == "POST":
-#         choice = request.POST['poll']
-#         if choice == 'option1':
-#             poll.option1_count += 1
-#         elif choice == 'option2':
-#             poll.option2_count += 1
-#         elif choice == 'option3':
-#             poll.option3_count += 1
-#         else:
-#             messages.warning("Sorry You cannot Vote today\n Invalid Form")
-#         poll.save()
-#         context = {'poll': poll,}
-#         return render(request, 'poll/poll_vote.html', context)
-
-
-class VoteView(View):
-    template_name = 'polls/poll_vote.html'
-
-    def get(self, request, poll_id):
-        poll = get_object_or_404(Polls, pk=poll_id)
-        context = {'poll': poll}
-        return render(request, self.template_name, context)
-
-    def post(self, request, poll_id):
-        poll = get_object_or_404(Polls, pk=poll_id)
-        choice = request.POST.get('poll')
-        
+    if request.method == "POST":
+        choice = request.POST['poll']
         if choice == 'option1':
             poll.option1_count += 1
         elif choice == 'option2':
@@ -161,17 +133,57 @@ class VoteView(View):
         elif choice == 'option3':
             poll.option3_count += 1
         else:
-            messages.warning(request, "Sorry, you cannot vote today. Invalid Form")
+            messages.warning("Sorry You cannot Vote today\n Invalid Form")
         
         poll.save()
-        messages.success("Thank you for Voting...")
-        return redirect('poll_detail', pk=poll.pk)
+        return redirect('poll_results')
+         
+    context = {'poll': poll,}
+    return render(request, 'polls/votes.html', context)
 
 
-def results(request, poll_id):
-    poll = Polls.objects.get(pk=poll_id)
+# class VoteView(View):
+#     template_name = 'polls/poll_vote.html'
+
+#     def get(self, request, poll_id):
+#         try:
+#             poll = get_object_or_404(Polls, pk=poll_id)
+#         except Polls.DoesNotExist:
+#             messages.error(request, "Poll not found...")
+#             return redirect('list_poll')
+        
+#         context = {'poll': poll}
+#         return render(request, self.template_name, context)
+
+#     def post(self, request, poll_id):
+#         try:
+#             poll = get_object_or_404(Polls, pk=poll_id)
+#         except Polls.DoesNotExist:
+#             messages.error(request, "Poll not found")
+#             return redirect('list_poll')
+        
+#         choice = request.POST.get('poll')
+        
+#         if choice == 'option1':
+#             poll.option1_count += 1
+#         elif choice == 'option2':
+#             poll.option2_count += 1
+#         elif choice == 'option3':
+#             poll.option3_count += 1
+#         else:
+#             messages.warning(request, "Sorry, you cannot vote today. Invalid Form")
+        
+#         poll.save()
+#         messages.success(request, "Thank you for Voting...")
+#         context = {'poll': poll}
+#         return render(request, 'poll/poll_vote.html', context)
+
+
+def results(request, pk):
+    poll = Polls.objects.get(pk=pk)
     context = {
         'poll': poll,
     }
+    messages.info(request, "Thank you for Voting...")
     return render(request, 'polls/results.html', context)
 

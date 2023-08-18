@@ -56,10 +56,10 @@ class Polls(models.Model):
     
 
     def get_absolute_url(self):
-        return reverse('post_list', kwargs={"id": self.pk})
+        return reverse('poll_detail', args=[self.pk])
 
 
-    def total_vote(self):
+    def total_votes(self):
          return self.option1_count + self.option2_count + self.option3_count
          
     
