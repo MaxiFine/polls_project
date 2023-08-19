@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.urls import reverse_lazy
+from rest_framework import generics
 from .models import Polls      # Question, Choice
 from .forms import PollsQueationForm, SharePollForm, EditPollForm     # PollsChoicesForm
 
@@ -51,7 +52,7 @@ class PollsCreateView(CreateView):
         form = self.form_class()
         return render(request, self.template_name, {'form': form,})
     
-    def poll(self, request):
+    def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
             form.instance.author = self.request.user

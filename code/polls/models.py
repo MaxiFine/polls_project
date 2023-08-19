@@ -52,7 +52,7 @@ class Polls(models.Model):
 
 
     def __str__(self):
-        return self.option1 + self.option2 + self.option3
+        return self.option1, self.option2, self.option3
     
 
     def get_absolute_url(self):

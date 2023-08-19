@@ -14,24 +14,7 @@
             </div>
 
             <div class="card-body">
-                <form method="post" action="#">
-                    {% csrf_token %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="option" id="option1" value="{{ poll.option1 }}">
-                        <label class="form-check-label" for="option1">
-                            {{ poll.option1 }}
-                        </label>
-                        <input class="form-check-input" type="radio" name="option" id="option2" value="{{ poll.option2 }}">
-                        <label class="form-check-label" for="option2">
-                            {{ poll.option2 }}
-                        </label>
-                        <input class="form-check-input" type="radio" name="option" id="option3" value="{{ poll.option3 }}">
-                        <label class="form-check-label" for="option3">
-                            {{ poll.option3 }}
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-2"><a href="{% url 'vote' poll.pk %}"></a>Vote</button>
-                </form>
+                <a class="btn btn-outline-info" href="{% url 'vote' poll.pk %}">Cast Vote</a>
             </div>
             <div class="card-footer">
                 <div class="card-footer text-center text-muted">

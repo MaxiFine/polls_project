@@ -6,7 +6,7 @@ from .models import Polls
 class PollsQueationForm(forms.ModelForm):
     class Meta:
         model = Polls
-        fields = ['question', 'option1', 'option2', 'option3',]
+        fields = ['question', 'author', 'option1', 'option2', 'option3',]
 
 
 class SharePollForm(forms.Form):
